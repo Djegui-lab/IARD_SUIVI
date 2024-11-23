@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#4CAF50"  # Couleur principale (vert par exemple)
+backgroundColor = "#222222"  # Couleur de fond (noir ou gris foncé)
+secondaryBackgroundColor = "#333333"  # Couleur de fond secondaire
+textColor = "#FFFFFF"  # Couleur du texte
+font = "sans serif"  # Police utilisée

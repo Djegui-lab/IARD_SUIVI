@@ -9,24 +9,6 @@ from sqlalchemy import create_engine
 import numpy as np
 
 
-# CSS personnalisé
-st.markdown("""
-    <style>
-        .stApp {
-            background-color: #F0F0F5;
-        }
-        .stButton>button {
-            background-color: #1E3D58;
-            color: white;
-            font-size: 16px;
-        }
-        .stTextInput, .stTextArea, .stSelectbox {
-            background-color: #E4E4E8;
-            color: #333333;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
 DATABASE_URL= os.getenv('DATABASE_URL')
 
 # Fonction pour créer la table

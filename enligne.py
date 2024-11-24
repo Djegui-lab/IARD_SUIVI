@@ -7,47 +7,48 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy import create_engine
 import numpy as np
+from dotenv import load_dotenv
 
+load_dotenv()
 
-# Récupérer les valeurs sensibles depuis les variables d'environnement
+# Récupérer les valeurs sensibles
 PASSWORD = os.getenv("APP_PASSWORD")
 DEVELOPER_NAME = os.getenv("DEVELOPER_NAME")
+
+# Vérification stricte en production
+if not PASSWORD or not DEVELOPER_NAME:
+    st.error("⚠️ Les variables d'environnement `APP_PASSWORD` et `DEVELOPER_NAME` doivent être configurées.")
+    st.stop()
 
 # Gestion des sessions utilisateur
 if "auth_success" not in st.session_state:
     st.session_state.auth_success = False
 
+# Authentification
 if not st.session_state.auth_success:
-    # Afficher un message de présentation de l'application
     st.markdown(f"""
-    ### 🔐 Application Sécurisée
-    Cette application a été développée par **{DEVELOPER_NAME}** pour assurer une gestion des données optimale et sécurisée.  
-    🚨 *Pour des raisons de sécurité, veuillez saisir le mot de passe fourni par le développeur pour accéder à l'application.* 🚨
+    ### 🔐 **Application Sécurisée**
+    Cette application a été développée par **{DEVELOPER_NAME}** pour garantir une gestion des données optimale et sécurisée.  
+    🚨 *Veuillez saisir le mot de passe fourni par le développeur pour accéder à l'application.* 🚨
     """)
-
-    # Icône de sécurité et champ pour le mot de passe
     st.subheader("🔒 Authentification")
     password_input = st.text_input("🔑 Saisissez votre mot de passe :", type="password")
-
-    # Bouton pour se connecter
     if st.button("🔓 Se connecter"):
         if password_input == PASSWORD:
             st.session_state.auth_success = True
             st.success("✅ Connexion réussie ! Bienvenue.")
         else:
             st.error("❌ Mot de passe incorrect. Veuillez réessayer.")
-else:
-    # --- Contenu principal de l'application ---
-    st.success("🎉 Vous êtes connecté avec succès.")
-    st.write("Bienvenue dans l'application sécurisée !")
-    
-    # Exemple de contenu principal
-    st.header("📊 Tableau de Bord")
-    st.write("Ajoutez ici vos fonctionnalités et visualisations principales.")
-    
-    # Bouton de déconnexion
-    if st.button("🚪 Se déconnecter"):
-        st.session_state.auth_success = False
+    # Arrêter ici si non authentifié
+    st.stop()
+
+# Contenu principal de l'application (uniquement accessible après authentification)
+st.success("🎉 Vous êtes connecté avec succès.")
+st.write("Bienvenue dans l'application sécurisée.")
+st.header("📊 Tableau de Bord")
+st.write("Ajoutez ici vos fonctionnalités et visualisations principales.")
+if st.button("🚪 Se déconnecter"):
+    st.session_state.auth_success = False
 
 
 

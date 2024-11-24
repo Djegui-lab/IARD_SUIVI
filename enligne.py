@@ -700,6 +700,61 @@ if st.button('Appliquer le filtre 🔍', key='filtrer_statut_documents'):
 
 
 
+import plotly.express as px
+
+
+
+# Formulaire de filtrage des statuts de souscription avec une présentation plus attrayante
+st.subheader("🔍 Filtrer les dossiers clients par statut de souscription")
+
+# Ajouter des descriptions plus visuelles avec des emojis pour chaque statut
+status_options = {
+    "En attente": "⏳ En attente de souscription",
+    "Souscrit": "✅ Souscription validée",
+    "Refusé": "❌ Souscription refusée"
+}
+
+# Sélection multiple pour les statuts de souscription avec descriptions
+statut_selections = st.multiselect(
+    "Choisissez les statuts de souscription à filtrer",
+    options=list(status_options.keys()),
+    format_func=lambda x: status_options[x],  # Affiche les descriptions
+    default=["En attente", "Souscrit"]  # Sélection par défaut
+)
+
+# Bouton pour appliquer le filtre avec une clé unique
+if st.button('Appliquer le filtre 🔍', key='filtrer_statut_souscription'):
+    # Construire le filtre SQL en fonction des statuts sélectionnés
+    if statut_selections:
+        statut_filter = f"statut_souscription IN ({', '.join([repr(status) for status in statut_selections])})"
+    else:
+        statut_filter = None  # Si aucun statut sélectionné, ne pas appliquer de filtre
+
+    # Récupérer les données filtrées
+    filtered_data = fetch_data(statut_filter)
+
+    # Afficher les résultats filtrés avec un joli tableau et un message plus attrayant
+    st.write("## Données enregistrées 📑")
+
+    if not filtered_data.empty:
+        st.dataframe(filtered_data)
+
+        # Générer un graphique en barres avec plotly
+        status_counts = filtered_data['statut_souscription'].value_counts().reset_index()
+        status_counts.columns = ['Statut', 'Nombre']
+
+        fig = px.bar(status_counts, x='Statut', y='Nombre', color='Statut',
+                     color_discrete_map={"En attente": "blue", "Souscrit": "green", "Refusé": "red"},
+                     title="Répartition des statuts de souscription",
+                     labels={'Statut': 'Statut de souscription', 'Nombre': 'Nombre de dossiers'})
+
+        st.plotly_chart(fig)
+
+    else:
+        st.warning("🚫 Aucune donnée correspondant au filtre sélectionné.")
+
+
+
 
 
 

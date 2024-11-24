@@ -136,6 +136,7 @@ DATABASE_URLS = os.getenv('DATABASE_URLS')
 
 engine = create_engine(DATABASE_URLS)
 
+@st.cache_data
 def fetch_data(query_filter=None):
     try:
         # Construire la requête SQL

@@ -9,10 +9,14 @@ import numpy as np
 
 
 import os
+import os
 import streamlit as st
 
+# Afficher les valeurs des variables d'environnement (pour le debug)
+st.write(f"APP_PASSWORD: {os.getenv('APP_PASSWORD')}")
+st.write(f"DEVELOPER_NAME: {os.getenv('DEVELOPER_NAME')}")
 
-# Récupérer les valeurs sensibles directement depuis les variables d'environnement
+# Récupérer les valeurs sensibles
 PASSWORD = os.getenv("APP_PASSWORD")
 DEVELOPER_NAME = os.getenv("DEVELOPER_NAME")
 

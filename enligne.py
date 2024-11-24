@@ -203,19 +203,49 @@ if submit_button:
     insert_result = insert_data(data)
     st.success(insert_result)
 
+
+
+
+
+
 st.subheader("🔍 Filtrer les dossiers clients")
-query_filter = st.text_input("Entrez un filtre SQL (ex. 'WHERE statut_souscription = ''Souscrit''')")
+
+# Saisie directe de filtres SQL avec un exemple comme placeholder
+query_filter = st.text_input(
+    "Entrez un filtre SQL",
+    placeholder="Exemple : statut_souscription = 'Souscrit' OR mensualite > 50"
+)
+
+# Validation et exécution du filtre
 if query_filter:
-    filtered_data = fetch_data(query_filter)
+    # Validation simple : interdiction des mots-clés sensibles
+    invalid_keywords = ["DELETE", "DROP", "UPDATE", ";"]
+    if any(keyword in query_filter.upper() for keyword in invalid_keywords):
+        st.error("Requête invalide : des mots-clés non autorisés sont détectés.")
+        filtered_data = pd.DataFrame()  # Pas de chargement si requête invalide
+    else:
+        try:
+            # Exécuter la requête SQL
+            filtered_data = fetch_data(query_filter)
+        except Exception as e:
+            st.error(f"Erreur dans la requête SQL : {e}")
+            filtered_data = pd.DataFrame()
 else:
+    # Chargement des données sans filtre
     filtered_data = fetch_data()
 
+# Affichage des données
 st.write("## Données enregistrées")
 if not filtered_data.empty:
-    st.dataframe(filtered_data)
+    # Affichage interactif des données
+    st.dataframe(
+        filtered_data,
+        width=1000,
+        height=500,
+        use_container_width=True
+    )
 else:
     st.warning("Aucune donnée correspondant au filtre.")
-
 
 
 
@@ -586,4 +616,50 @@ if st.button("✅ Mettre à jour le statut et le courtier"):
         st.warning("⚠️ Veuillez fournir soit un ID client soit un email, ainsi qu'un nom de courtier.")
 
 
-#     streamlit run enligne.py
+
+
+
+
+# Formulaire de filtrage des statuts des documents avec une présentation plus attrayante
+st.subheader("🔍 Filtrer les dossiers clients par statut des documents")
+
+# Ajouter des descriptions plus visuelles avec des emojis pour chaque statut
+status_options = {
+    "Complet": "✅ Documents complets (permis, carte grise, etc.)",
+    "Partiellement complet": "⚠️ Documents partiellement fournis (manque des pièces)",
+    "Non fourni": "❌ Aucun document fourni (pas de permis, carte grise, etc.)"
+}
+
+# Sélection multiple pour les statuts des documents avec descriptions
+statut_selections = st.multiselect(
+    "Choisissez les statuts des documents à filtrer",
+    options=list(status_options.keys()),
+    format_func=lambda x: status_options[x],  # Affiche les descriptions
+    default=['Partiellement complet', 'Non fourni']  # Sélection par défaut
+)
+
+# Bouton pour appliquer le filtre avec une clé unique
+if st.button('Appliquer le filtre 🔍', key='filtrer_statut_documents'):
+    # Construire le filtre SQL en fonction des statuts sélectionnés
+    if statut_selections:
+        statut_filter = f"statut_documents IN ({', '.join([repr(status) for status in statut_selections])})"
+    else:
+        statut_filter = None  # Si aucun statut sélectionné, ne pas appliquer de filtre
+
+    # Récupérer les données filtrées
+    filtered_data = fetch_data(statut_filter)
+
+    # Afficher les résultats filtrés avec un joli tableau et un message plus attrayant
+    st.write("## Données enregistrées 📑")
+
+    if not filtered_data.empty:
+        st.dataframe(filtered_data)
+    else:
+        st.warning("🚫 Aucune donnée correspondant au filtre sélectionné.")
+
+
+
+
+
+
+

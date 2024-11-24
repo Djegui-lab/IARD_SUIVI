@@ -6,7 +6,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy import create_engine
 import numpy as np
-
+import os
 
 # Récupérer les valeurs sensibles
 PASSWORD = os.getenv("APP_PASSWORD")

@@ -9,6 +9,50 @@ from sqlalchemy import create_engine
 import numpy as np
 
 
+# Récupérer les valeurs sensibles depuis les variables d'environnement
+PASSWORD = os.getenv("APP_PASSWORD")
+DEVELOPER_NAME = os.getenv("DEVELOPER_NAME")
+
+# Gestion des sessions utilisateur
+if "auth_success" not in st.session_state:
+    st.session_state.auth_success = False
+
+if not st.session_state.auth_success:
+    # Afficher un message de présentation de l'application
+    st.markdown(f"""
+    ### 🔐 Application Sécurisée
+    Cette application a été développée par **{DEVELOPER_NAME}** pour assurer une gestion des données optimale et sécurisée.  
+    🚨 *Pour des raisons de sécurité, veuillez saisir le mot de passe fourni par le développeur pour accéder à l'application.* 🚨
+    """)
+
+    # Icône de sécurité et champ pour le mot de passe
+    st.subheader("🔒 Authentification")
+    password_input = st.text_input("🔑 Saisissez votre mot de passe :", type="password")
+
+    # Bouton pour se connecter
+    if st.button("🔓 Se connecter"):
+        if password_input == PASSWORD:
+            st.session_state.auth_success = True
+            st.success("✅ Connexion réussie ! Bienvenue.")
+        else:
+            st.error("❌ Mot de passe incorrect. Veuillez réessayer.")
+else:
+    # --- Contenu principal de l'application ---
+    st.success("🎉 Vous êtes connecté avec succès.")
+    st.write("Bienvenue dans l'application sécurisée !")
+    
+    # Exemple de contenu principal
+    st.header("📊 Tableau de Bord")
+    st.write("Ajoutez ici vos fonctionnalités et visualisations principales.")
+    
+    # Bouton de déconnexion
+    if st.button("🚪 Se déconnecter"):
+        st.session_state.auth_success = False
+
+
+
+
+
 DATABASE_URL= os.getenv('DATABASE_URL')
 
 # Fonction pour créer la table

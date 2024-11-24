@@ -1,4 +1,3 @@
-import os 
 import streamlit as st
 import psycopg2
 from psycopg2.extras import Json
@@ -9,7 +8,11 @@ from sqlalchemy import create_engine
 import numpy as np
 
 
-# Récupérer les valeurs sensibles
+import os
+import streamlit as st
+
+
+# Récupérer les valeurs sensibles directement depuis les variables d'environnement
 PASSWORD = os.getenv("APP_PASSWORD")
 DEVELOPER_NAME = os.getenv("DEVELOPER_NAME")
 
@@ -47,7 +50,6 @@ st.header("📊 Tableau de Bord")
 st.write("Ajoutez ici vos fonctionnalités et visualisations principales.")
 if st.button("🚪 Se déconnecter"):
     st.session_state.auth_success = False
-
 
 
 

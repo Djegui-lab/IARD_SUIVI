@@ -1,3 +1,4 @@
+
 import streamlit as st
 import psycopg2
 from psycopg2.extras import Json
@@ -702,7 +703,6 @@ if st.button('Appliquer le filtre 🔍', key='filtrer_statut_souscription'):
 
     else:
         st.warning("🚫 Aucune donnée correspondant au filtre sélectionné.")
-
 
 
 

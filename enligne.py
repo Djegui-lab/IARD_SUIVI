@@ -8,45 +8,6 @@ from sqlalchemy import create_engine
 import numpy as np
 import os
 
-# Récupérer les valeurs sensibles
-PASSWORD = os.getenv("APP_PASSWORD")
-DEVELOPER_NAME = os.getenv("DEVELOPER_NAME")
-
-# Vérification stricte en production
-if not PASSWORD or not DEVELOPER_NAME:
-    st.error("⚠️ Les variables d'environnement `APP_PASSWORD` et `DEVELOPER_NAME` doivent être configurées.")
-    st.stop()
-
-# Gestion des sessions utilisateur
-if "auth_success" not in st.session_state:
-    st.session_state.auth_success = False
-
-# Authentification
-if not st.session_state.auth_success:
-    st.markdown(f"""
-    ### 🔐 **Application Sécurisée**
-    Cette application a été développée par **{DEVELOPER_NAME}** pour garantir une gestion des données optimale et sécurisée.  
-    🚨 *Veuillez saisir le mot de passe fourni par le développeur pour accéder à l'application.* 🚨
-    """)
-    st.subheader("🔒 Authentification")
-    password_input = st.text_input("🔑 Saisissez votre mot de passe :", type="password")
-    if st.button("🔓 Se connecter"):
-        if password_input == PASSWORD:
-            st.session_state.auth_success = True
-            st.success("✅ Connexion réussie ! Bienvenue.")
-        else:
-            st.error("❌ Mot de passe incorrect. Veuillez réessayer.")
-    # Arrêter ici si non authentifié
-    st.stop()
-
-# Contenu principal de l'application (uniquement accessible après authentification)
-st.success("🎉 Vous êtes connecté avec succès.")
-st.write("Bienvenue dans l'application sécurisée.")
-st.header("📊 Tableau de Bord")
-st.write("Ajoutez ici vos fonctionnalités et visualisations principales.")
-if st.button("🚪 Se déconnecter"):
-    st.session_state.auth_success = False
-
 
 
 
@@ -246,10 +207,10 @@ if submit_button:
     st.success(insert_result)
 
 
+import streamlit as st
+import pandas as pd
 
-
-
-
+# Titre de la section
 st.subheader("🔍 Filtrer les dossiers clients")
 
 # Saisie directe de filtres SQL avec un exemple comme placeholder
@@ -260,34 +221,22 @@ query_filter = st.text_input(
 
 # Validation et exécution du filtre
 if query_filter:
-    # Validation simple : interdiction des mots-clés sensibles
-    invalid_keywords = ["DELETE", "DROP", "UPDATE", ";"]
-    if any(keyword in query_filter.upper() for keyword in invalid_keywords):
-        st.error("Requête invalide : des mots-clés non autorisés sont détectés.")
-        filtered_data = pd.DataFrame()  # Pas de chargement si requête invalide
-    else:
-        try:
-            # Exécuter la requête SQL
-            filtered_data = fetch_data(query_filter)
-        except Exception as e:
-            st.error(f"Erreur dans la requête SQL : {e}")
-            filtered_data = pd.DataFrame()
+    try:
+        # Exécuter la requête SQL
+        filtered_data = fetch_data(query_filter)
+    except Exception as e:
+        st.error(f"Erreur dans la requête SQL : {e}")
+        filtered_data = pd.DataFrame()
 else:
     # Chargement des données sans filtre
     filtered_data = fetch_data()
 
-# Affichage des données
-st.write("## Données enregistrées")
+# Afficher les données filtrées
 if not filtered_data.empty:
-    # Affichage interactif des données
-    st.dataframe(
-        filtered_data,
-        width=1000,
-        height=500,
-        use_container_width=True
-    )
+    st.dataframe(filtered_data)
 else:
-    st.warning("Aucune donnée correspondant au filtre.")
+    st.warning("Aucune donnée ne correspond aux critères sélectionnés.")
+
 
 
 
